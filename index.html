@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>国学起名·八字命运测算</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --ink-black: #1a1a1a;
+            --vermilion: #c41e3a;
+            --rice-white: #f5f5f0;
+            --ink-gray: #4a4a4a;
+            --gold: #d4af37;
+            --wood: #2e7d32;
+            --fire: #e64a19;
+            --earth: #8d6e63;
+            --metal: #607d8b;
+            --water: #1976d2;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(180deg, #f5f5f0 0%, #e8e8e0 100%);
+            color: var(--ink-black);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        /* 古风背景装饰 */
+        .bg-decoration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.05;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M20 180 Q50 100 80 180 T140 180' stroke='%231a1a1a' fill='none' stroke-width='2'/%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' stroke='%231a1a1a' fill='none' stroke-width='1'/%3E%3Cpath d='M50 10 L50 90 M10 50 L90 50' stroke='%231a1a1a' stroke-width='1'/%3E%3C/svg%3E");
+            background-size: 300px, 200px;
+            background-position: 10% 20%, 90% 80%;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* 导航栏 */
+        nav {
+            background: rgba(245, 245, 240, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--vermilion);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--ink-black);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+            font-size: 0.95em;
+        }
+
+        .nav-links a:hover {
+            color: var(--vermilion);
+        }
+
+        /* 通用区块样式 */
+        section {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            font-size: 2em;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--ink-black);
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--vermilion);
+            margin: 15px auto 0;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            font-size: 1.1em;
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+            touch-action: manipulation;
+        }
+
+        .btn-primary {
+            background: var(--vermilion);
+            color: white;
+            border: 2px solid var(--vermilion);
+        }
+
+        .btn-primary:hover {
+            background: #a01828;
+            border-color: #a01828;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--ink-black);
+            border: 2px solid var(--gold);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gold);
+            color: var(--ink-black);
+        }
+
+        /* 首页首屏 */
+        .hero {
+            padding: 120px 0 80px;
+            text-align: center;
+            background: linear-gradient(135deg, #f5f5f0 0%, #e8e8e0 50%, #f0f0e8 100%);
+        }
+
+        .hero h1 {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: var(--ink-black);
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .hero .subtitle {
+            font-size: 1.2em;
+            color: var(--ink-gray);
+            margin-bottom: 20px;
+        }
+
+        .hero .description {
+            font-size: 1em;
+            color: var(--ink-gray);
+            max-width: 700px;
+            margin: 0 auto 30px;
+            line-height: 1.8;
+        }
+
+        .test-selector {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .test-card {
+            background: white;
+            border: 3px solid var(--gold);
+            border-radius: 12px;
+            padding: 30px 20px;
+            width: 300px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .test-icon {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+        }
+
+        .test-card h3 {
+            color: var(--vermilion);
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .test-card p {
+            color: var(--ink-gray);
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        /* 八字输入页面 */
+        #baziSection {
+            display: none;
+            padding: 100px 0 60px;
+            background: var(--rice-white);
+        }
+
+        .bazi-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px 25px;
+            border-radius: 12px;
+            border: 3px solid var(--gold);
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
+        }
+
+        .bazi-title {
+            color: var(--vermilion);
+            font-size: 1.8em;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--ink-black);
+            font-size: 1.05em;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 12px;
+            border: 2px solid var(--gold);
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: 'Noto Serif SC', serif;
+            background: var(--rice-white);
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23d4af37'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 35px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--vermilion);
+        }
+
+        .time-note {
+            font-size: 0.85em;
+            color: var(--ink-gray);
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* 测试页面 */
+        #quizSection {
+            display: none;
+            padding: 100px 0 60px;
+            background: var(--rice-white);
+        }
+
+        .quiz-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px 25px;
+            border-radius: 8px;
+            border: 3px solid var(--gold);
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--rice-white);
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--vermilion);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-number {
+            color: var(--vermilion);
+            font-size: 1em;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: var(--ink-black);
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid var(--gold);
+            padding: 14px 16px;
+            font-size: 1em;
+            font-family: 'Noto Serif SC', serif;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            text-align: left;
+            color: var(--ink-black);
+            touch-action: manipulation;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            background: var(--gold);
+            color: var(--ink-black);
+            transform: translateX(3px);
+        }
+
+        .option.selected {
+            background: var(--vermilion);
+            color: white;
+            border-color: var(--vermilion);
+            font-weight: 700;
+        }
+
+        /* 结果页面 */
+        #resultSection {
+            display: none;
+            padding: 100px 0 60px;
+            background: var(--rice-white);
+        }
+
+        .result-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px 25px;
+            border-radius: 8px;
+            border: 3px solid var(--gold);
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
+        }
+
+        .result-title {
+            color: var(--vermilion);
+            font-size: 2em;
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        /* 五行分析板块 */
+        .wuxing-section {
+            background: linear-gradient(135deg, #f9f9f5 0%, #f0f0e8 100%);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 2px solid var(--gold);
+        }
+
+        .wuxing-section h3 {
+            color: var(--gold);
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .bazi-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .wuxing-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .wuxing-item {
+            text-align: center;
+            padding: 15px 8px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .wuxing-wood { background: var(--wood); }
+        .wuxing-fire { background: var(--fire); }
+        .wuxing-earth { background: var(--earth); }
+        .wuxing-metal { background: var(--metal); }
+        .wuxing-water { background: var(--water); }
+
+        .xiyongshen {
+            text-align: center;
+            font-size: 1.1em;
+            padding: 12px;
+            background: var(--vermilion);
+            color: white;
+            border-radius: 4px;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
+        .result-section {
+            text-align: left;
+            margin-bottom: 25px;
+            padding: 25px;
+            background: var(--rice-white);
+            border-left: 4px solid var(--vermilion);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .result-section h3 {
+            color: var(--vermilion);
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .result-section p {
+            line-height: 1.8;
+            color: var(--ink-gray);
+            font-size: 1em;
+        }
+
+        .result-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, var(--ink-black) 0%, var(--ink-gray) 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .cta-section h3 {
+            font-size: 1.5em;
+            margin-bottom: 12px;
+            color: var(--gold);
+        }
+
+        .cta-section p {
+            margin-bottom: 20px;
+            color: #ccc;
+            font-size: 0.95em;
+        }
+
+        /* Toast提示 */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--vermilion);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 4px;
+            font-weight: 600;
+            display: none;
+            z-index: 2000;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            font-size: 0.95em;
+            white-space: nowrap;
+        }
+
+        /* 页脚 */
+        footer {
+            background: var(--ink-black);
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        footer p {
+            color: var(--ink-gray);
+            font-size: 0.9em;
+        }
+
+        /* 手机端专属优化 */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2em;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .test-card {
+                width: 100%;
+                padding: 25px 15px;
+            }
+            
+            .bazi-container, .quiz-container, .result-container {
+                padding: 30px 20px;
+                margin: 0 10px;
+            }
+            
+            .wuxing-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .section-title {
+                font-size: 1.6em;
+            }
+            
+            .btn {
+                padding: 12px 24px;
+                font-size: 1em;
+                width: 100%;
+                max-width: 280px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-control {
+                padding: 16px 12px;
+                padding-right: 40px;
+            }
+            
+            .option {
+                padding: 16px 14px;
+                min-height: 56px;
+            }
+            
+            .result-title {
+                font-size: 1.6em;
+            }
+            
+            .toast {
+                width: 90%;
+                max-width: 300px;
+                white-space: normal;
+                text-align: center;
+            }
+        }
+
+        /* 小屏手机优化 */
+        @media (max-width: 375px) {
+            .hero h1 {
+                font-size: 1.8em;
+            }
+            
+            .hero .subtitle {
+                font-size: 1.1em;
+            }
+            
+            .section-title {
+                font-size: 1.5em;
+            }
+            
+            .test-card h3 {
+                font-size: 1.4em;
+            }
+            
+            .bazi-title {
+                font-size: 1.6em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-decoration"></div>
+
+    <!-- 导航栏 -->
+    <nav>
+        <div class="container">
+            <div class="logo">国学起名</div>
+            <ul class="nav-links">
+                <li><a href="#home" onclick="backToHome()">首页</a></li>
+                <li><a href="#services">服务项目</a></li>
+                <li><a href="#faq">常见问题</a></li>
+                <li><a href="#contact">联系我们</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主页面内容 -->
+    <div id="mainContent">
+        <!-- 首屏Banner -->
+        <section class="hero" id="home">
+            <div class="container">
+                <h1>一字千金，名定一生</h1>
+                <p class="subtitle">传承千年国学智慧，结合八字五行，为您测算命运</p>
+                <p class="description">
+                    八字命理，源自《易经》，是中国千年传承的智慧结晶。<br>
+                    通过出生年月日时，推算五行生克，洞悉性格天赋，预测未来走向。<br>
+                    选择下方测试，开启您的命运探索之旅。
+                </p>
+                
+                <div class="test-selector">
+                    <div class="test-card" onclick="selectTest('child')">
+                        <div class="test-icon">👶</div>
+                        <h3>孩子性格命运测试</h3>
+                        <p>结合宝宝八字，分析性格天赋、学业事业、健康运势</p>
+                        <button class="btn btn-primary">立即测算</button>
+                    </div>
+                    
+                    <div class="test-card" onclick="selectTest('adult')">
+                        <div class="test-icon">👤</div>
+                        <h3>成人性格命运测试</h3>
+                        <p>结合个人八字，分析事业财运、感情婚姻、人际关系</p>
+                        <button class="btn btn-secondary">立即测算</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 服务分类（已移除公司品牌起名） -->
+        <section class="services" id="services">
+            <div class="container">
+                <h2 class="section-title">专业起名服务</h2>
+                <div class="service-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px;">
+                    <div class="service-card" style="background: var(--rice-white); border-radius: 8px; overflow: hidden;">
+                        <div class="service-img" style="height: 180px; background: linear-gradient(135deg, var(--ink-gray) 0%, var(--ink-black) 100%); display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 3em;">👶</div>
+                        <div class="service-content" style="padding: 25px;">
+                            <h3 style="color: var(--vermilion); margin-bottom: 12px;">新生儿起名</h3>
+                            <p>结合宝宝生辰八字、五行喜忌，起一个助健康、助学业、助事业的好名字</p>
+                        </div>
+                    </div>
+                    <div class="service-card" style="background: var(--rice-white); border-radius: 8px; overflow: hidden;">
+                        <div class="service-img" style="height: 180px; background: linear-gradient(135deg, var(--ink-gray) 0%, var(--ink-black) 100%); display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 3em;">👤</div>
+                        <div class="service-content" style="padding: 25px;">
+                            <h3 style="color: var(--vermilion); margin-bottom: 12px;">成人改名</h3>
+                            <p>根据个人命理和人生阶段，改一个带来好运、提升气场的名字</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 常见问题 -->
+        <section class="faq" id="faq">
+            <div class="container">
+                <h2 class="section-title">常见问题</h2>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Q1：八字测算真的准确吗？</span>
+                            <span>+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>八字命理是中国几千年传承的统计学和哲学智慧，通过对出生时间对应的天体运行规律的分析，揭示人的性格天赋和运势走向。它不是迷信，而是一种对人生规律的总结和参考。</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Q2：不知道准确的出生时间怎么办？</span>
+                            <span>+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>如果不知道准确的出生时间，可以选择"不知道时辰"选项，我们会根据您提供的日期给出大致的五行分析。如果需要更精准的测算，建议咨询专业大师进行时辰校正。</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Q3：名字真的能影响命运吗？</span>
+                            <span>+</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>名字是一个人能量场的重要组成部分，一个符合命理的好名字能够调整人的气场，增强自信心，从而对人生发展产生积极影响。同时，名字也是社会交往的第一张名片，好的名字更容易给人留下好印象。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系我们 -->
+        <section class="contact" id="contact">
+            <div class="container">
+                <h2 class="section-title">联系我们</h2>
+                <div class="contact-info">
+                    <div class="contact-item" style="margin-bottom: 20px; font-size: 1.1em;">
+                        <span style="color: var(--gold); font-weight: 600;">咨询热线：</span>400-888-8888
+                    </div>
+                    <div class="contact-item" style="margin-bottom: 20px; font-size: 1.1em;">
+                        <span style="color: var(--gold); font-weight: 600;">微信客服：</span>guoxueqiming001
+                    </div>
+                    <div class="contact-item" style="margin-bottom: 20px; font-size: 1.1em;">
+                        <span style="color: var(--gold); font-weight: 600;">工作时间：</span>周一至周日 9:00-21:00
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer>
+            <div class="container">
+                <p>© 2026 国学起名 · 传承千年智慧 · 定制专属好名</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 八字输入页面 -->
+    <section id="baziSection">
+        <div class="container">
+            <div class="bazi-container">
+                <h2 class="bazi-title" id="baziTitle">宝宝八字信息</h2>
+                <form id="baziForm">
+                    <div class="form-group">
+                        <label>出生日期（阳历）</label>
+                        <div class="form-row">
+                            <select class="form-control" id="year" required></select>
+                            <select class="form-control" id="month" required></select>
+                            <select class="form-control" id="day" required></select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>出生时间</label>
+                        <div class="form-row">
+                            <select class="form-control" id="hour" required>
+                                <option value="">选择时辰</option>
+                                <option value="0">子时 (23:00-01:00)</option>
+                                <option value="1">丑时 (01:00-03:00)</option>
+                                <option value="2">寅时 (03:00-05:00)</option>
+                                <option value="3">卯时 (05:00-07:00)</option>
+                                <option value="4">辰时 (07:00-09:00)</option>
+                                <option value="5">巳时 (09:00-11:00)</option>
+                                <option value="6">午时 (11:00-13:00)</option>
+                                <option value="7">未时 (13:00-15:00)</option>
+                                <option value="8">申时 (15:00-17:00)</option>
+                                <option value="9">酉时 (17:00-19:00)</option>
+                                <option value="10">戌时 (19:00-21:00)</option>
+                                <option value="11">亥时 (21:00-23:00)</option>
+                                <option value="unknown">不知道时辰</option>
+                            </select>
+                        </div>
+                        <p class="time-note">注：出生时间以当地真太阳时为准，相差一小时以上会影响结果</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>性别</label>
+                        <div class="form-row">
+                            <select class="form-control" id="gender" required>
+                                <option value="male">男</option>
+                                <option value="female">女</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="backToHome()">返回首页</button>
+                        <button type="submit" class="btn btn-primary">开始测试</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- 互动测试页面 -->
+    <section id="quizSection">
+        <div class="container">
+            <div class="quiz-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="question-number" id="questionNumber">第 1 题 / 共 50 题</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+                <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()" style="display:none;">下一题</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 结果页面 -->
+    <section id="resultSection">
+        <div class="container">
+            <div class="result-container">
+                <h2 class="result-title">八字命运综合报告</h2>
+                
+                <!-- 五行分析 -->
+                <div class="wuxing-section">
+                    <h3>☯️ 八字五行分析</h3>
+                    <div class="bazi-info" id="baziInfo"></div>
+                    <div class="wuxing-grid" id="wuxingGrid"></div>
+                    <div class="xiyongshen" id="xiyongshen"></div>
+                </div>
+                
+                <!-- 性格分析 -->
+                <div class="result-section">
+                    <h3>🧠 性格特质分析</h3>
+                    <p id="personalityResult"></p>
+                </div>
+                
+                <!-- 事业分析 -->
+                <div class="result-section">
+                    <h3>💼 事业财运走向</h3>
+                    <p id="careerResult"></p>
+                </div>
+                
+                <!-- 感情分析 -->
+                <div class="result-section">
+                    <h3>💕 感情婚姻运势</h3>
+                    <p id="loveResult"></p>
+                </div>
+                
+                <!-- 健康分析 -->
+                <div class="result-section">
+                    <h3>🏥 健康注意事项</h3>
+                    <p id="healthResult"></p>
+                </div>
+                
+                <!-- 起名建议 -->
+                <div class="result-section">
+                    <h3>✍️ 起名/改名建议</h3>
+                    <p id="nameAdvice"></p>
+                </div>
+                
+                <div class="result-buttons">
+                    <button class="btn btn-primary" onclick="copyResult()">一键复制报告</button>
+                    <button class="btn btn-secondary" onclick="backToHome()">重新测试</button>
+                </div>
+                
+                <!-- 转化引导 -->
+                <div class="cta-section">
+                    <h3>想要更精准的专属分析？</h3>
+                    <p>专业大师一对一详批八字，为您定制最适合的起名/改名方案</p>
+                    <button class="btn btn-primary">立即预约大师咨询</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="toast" id="toast">已复制到剪贴板！</div>
+
+    <script>
+        // 全局变量
+        let currentTestType = 'child'; // child 或 adult
+        let currentQuestion = 0;
+        let scores = { personality: 0, career: 0, love: 0, health: 0 };
+        let selectedOption = null;
+        let baziData = {};
+
+        // 天干地支五行对应表
+        const tianGan = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+        const diZhi = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+        
+        const tianGanWuxing = {
+            '甲': '木', '乙': '木',
+            '丙': '火', '丁': '火',
+            '戊': '土', '己': '土',
+            '庚': '金', '辛': '金',
+            '壬': '水', '癸': '水'
+        };
+        
+        const diZhiWuxing = {
+            '子': '水', '丑': '土', '寅': '木', '卯': '木',
+            '辰': '土', '巳': '火', '午': '火', '未': '土',
+            '申': '金', '酉': '金', '戌': '土', '亥': '水'
+        };
+
+        // 完整50道孩子测试题
+        const childQuestions = [
+            {question:"孩子出生时的哭声特点是？",options:[{text:"A. 洪亮有力，持续时间长",scores:{personality:3,career:3,love:1,health:2}},{text:"B. 温和细腻，声音婉转",scores:{personality:1,career:1,love:3,health:2}},{text:"C. 节奏规律，不疾不徐",scores:{personality:2,career:2,love:2,health:3}},{text:"D. 时断时续，比较娇气",scores:{personality:1,career:1,love:2,health:1}}]},
+            {question:"孩子的眼睛神态是？",options:[{text:"A. 炯炯有神，目光坚定",scores:{personality:3,career:3,love:1,health:2}},{text:"B. 温柔如水，眼含笑意",scores:{personality:1,career:1,love:3,health:2}},{text:"C. 眼神灵动，东张西望",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 眼神沉静，不爱转动",scores:{personality:2,career:2,love:2,health:3}}]},
+            {question:"孩子出生时的天气如何？",options:[{text:"A. 晴空万里，阳光明媚",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 细雨蒙蒙，滋润万物",scores:{personality:2,career:2,love:3,health:2}},{text:"C. 多云天气，阴阳调和",scores:{personality:2,career:2,love:2,health:3}},{text:"D. 雪花纷飞，银装素裹",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的睡姿偏好是？",options:[{text:"A. 仰睡，四肢舒展",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 侧睡，蜷缩如弓",scores:{personality:2,career:2,love:3,health:2}},{text:"C. 睡姿多变，灵活自如",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 俯卧，沉稳踏实",scores:{personality:3,career:3,love:2,health:3}}]},
+            {question:"孩子对音乐的反应是？",options:[{text:"A. 听到节奏明快的音乐就兴奋",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 听到轻柔旋律就安静下来",scores:{personality:2,career:2,love:3,health:2}},{text:"C. 对各种音乐都有兴趣",scores:{personality:2,career:2,love:2,health:3}},{text:"D. 对古典音乐特别敏感",scores:{personality:3,career:2,love:3,health:2}}]},
+            {question:"孩子抓周时最先抓住什么？",options:[{text:"A. 笔墨书籍（文昌星照）",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 算盘钱币（财运亨通）",scores:{personality:3,career:3,love:2,health:2}},{text:"C. 胭脂水粉（桃花旺盛）",scores:{personality:2,career:2,love:3,health:2}},{text:"D. 印章官帽（官运亨通）",scores:{personality:3,career:3,love:2,health:2}}]},
+            {question:"孩子的肤色偏向是？",options:[{text:"A. 白皙透亮，如玉般温润",scores:{personality:2,career:2,love:3,health:2}},{text:"B. 健康小麦色，充满活力",scores:{personality:3,career:3,love:2,health:3}},{text:"C. 红润气色，血气充足",scores:{personality:3,career:2,love:2,health:3}},{text:"D. 肤色适中，平衡和谐",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的头发特点是？",options:[{text:"A. 乌黑浓密，发质粗硬",scores:{personality:3,career:3,love:2,health:3}},{text:"B. 柔软顺滑，发色偏浅",scores:{personality:2,career:2,love:3,health:2}},{text:"C. 发色乌黑，发质适中",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 头发自然卷，富有个性",scores:{personality:3,career:2,love:3,health:2}}]},
+            {question:"孩子的手指形状是？",options:[{text:"A. 手指修长，指节分明",scores:{personality:2,career:2,love:3,health:2}},{text:"B. 手指圆润，肉感饱满",scores:{personality:3,career:3,love:2,health:3}},{text:"C. 手指粗细适中，匀称协调",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 手指短粗，结实有力",scores:{personality:3,career:3,love:2,health:3}}]},
+            {question:"孩子的笑声特点是？",options:[{text:"A. 开怀大笑，声音洪亮",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 抿嘴微笑，温柔含蓄",scores:{personality:2,career:2,love:3,health:2}},{text:"C. 笑声清脆，如银铃般",scores:{personality:2,career:2,love:3,health:2}},{text:"D. 笑声低沉，富有磁性",scores:{personality:3,career:3,love:2,health:2}}]},
+            {question:"孩子对陌生人的态度是？",options:[{text:"A. 主动示好，不怕生人",scores:{personality:3,career:3,love:3,health:2}},{text:"B. 害羞躲人，需要时间适应",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 观察后再决定是否亲近",scores:{personality:2,career:2,love:2,health:3}},{text:"D. 保持距离，警惕性高",scores:{personality:3,career:3,love:2,health:2}}]},
+            {question:"孩子的食欲情况是？",options:[{text:"A. 食欲旺盛，不挑食",scores:{personality:3,career:3,love:2,health:3}},{text:"B. 食欲一般，比较挑嘴",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 食欲稳定，规律进食",scores:{personality:2,career:2,love:2,health:3}},{text:"D. 食欲时好时坏，受情绪影响",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的睡眠质量是？",options:[{text:"A. 睡得沉，不易惊醒",scores:{personality:3,career:3,love:2,health:3}},{text:"B. 睡眠浅，容易惊醒",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 睡眠规律，按时作息",scores:{personality:2,career:2,love:2,health:3}},{text:"D. 睡眠时间长，喜欢赖床",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子对色彩的偏好是？",options:[{text:"A. 喜欢红色、橙色等暖色调",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 喜欢蓝色、绿色等冷色调",scores:{personality:2,career:2,love:2,health:3}},{text:"C. 喜欢金色、黄色等富贵色",scores:{personality:3,career:3,love:2,health:2}},{text:"D. 喜欢粉色、紫色等柔和色",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的动作协调性是？",options:[{text:"A. 动作灵活，协调性好",scores:{personality:3,career:3,love:2,health:3}},{text:"B. 动作稍显笨拙，需要练习",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 动作稳重，不慌不忙",scores:{personality:2,career:2,love:2,health:3}},{text:"D. 动作敏捷，反应迅速",scores:{personality:3,career:3,love:2,health:2}}]},
+            {question:"孩子的语言发育情况是？",options:[{text:"A. 开口早，口齿伶俐",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 开口稍晚，但表达清晰",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 语言发育正常，按部就班",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 善于模仿，学习能力强",scores:{personality:3,career:2,love:3,health:2}}]},
+            {question:"孩子的好奇心表现是？",options:[{text:"A. 对什么都感兴趣，喜欢探索",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 只对特定事物感兴趣",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 好奇心适中，适度探索",scores:{personality:2,career:2,love:2,health:3}},{text:"D. 观察力敏锐，注意细节",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的耐心程度是？",options:[{text:"A. 耐心很好，能长时间专注",scores:{personality:3,career:3,love:2,health:3}},{text:"B. 耐心一般，容易分心",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 耐心时好时坏，看心情",scores:{personality:2,career:2,love:3,health:2}},{text:"D. 耐心不足，但行动力强",scores:{personality:3,career:3,love:2,health:2}}]},
+            {question:"孩子的分享意识是？",options:[{text:"A. 乐于分享，大方开朗",scores:{personality:2,career:2,love:3,health:2}},{text:"B. 不太愿意分享，需要引导",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 看情况分享，有选择性",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 愿意分享给特定的人",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的抗挫能力是？",options:[{text:"A. 跌倒了自己爬起来，不哭",scores:{personality:3,career:3,love:2,health:3}},{text:"B. 需要安慰才能平复情绪",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 情绪恢复快，不记仇",scores:{personality:2,career:2,love:3,health:2}},{text:"D. 会生气，但很快忘记",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的领导潜质是？",options:[{text:"A. 喜欢指挥别的小朋友",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 更愿意跟随别人",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 有自己的想法，但不强迫别人",scores:{personality:2,career:2,love:3,health:2}},{text:"D. 善于协调，能让大家都开心",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的艺术天赋表现是？",options:[{text:"A. 喜欢画画，色彩感好",scores:{personality:2,career:2,love:3,health:2}},{text:"B. 喜欢音乐，节奏感强",scores:{personality:2,career:2,love:3,health:2}},{text:"C. 喜欢跳舞，肢体协调",scores:{personality:3,career:3,love:2,health:3}},{text:"D. 暂时没表现出特别偏好",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的逻辑思维表现是？",options:[{text:"A. 喜欢拼图、积木等益智玩具",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 对数字敏感，记忆力好",scores:{personality:3,career:3,love:2,health:2}},{text:"C. 喜欢问为什么，好奇心强",scores:{personality:3,career:2,love:2,health:2}},{text:"D. 更擅长形象思维",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的运动天赋表现是？",options:[{text:"A. 体力充沛，喜欢跑跳",scores:{personality:3,career:3,love:2,health:3}},{text:"B. 动作协调，学习运动快",scores:{personality:3,career:3,love:2,health:3}},{text:"C. 喜欢安静的活动",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 运动能力一般，但耐力好",scores:{personality:2,career:2,love:2,health:3}}]},
+            {question:"孩子的独立性表现是？",options:[{text:"A. 自己的事情自己做",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 需要大人帮助才能完成",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 想独立，但能力有限",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 看心情，有时独立有时依赖",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的责任感表现是？",options:[{text:"A. 做错事勇于承认",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 会找借口推卸责任",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 需要引导才会承担",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 有保护欲，想照顾别人",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的情绪稳定性是？",options:[{text:"A. 情绪稳定，很少哭闹",scores:{personality:2,career:2,love:2,health:3}},{text:"B. 情绪波动大，容易激动",scores:{personality:2,career:2,love:3,health:2}},{text:"C. 情绪来得快去得也快",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 比较敏感，容易受影响",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的社交能力表现是？",options:[{text:"A. 很快能和小朋友打成一片",scores:{personality:3,career:3,love:3,health:2}},{text:"B. 需要时间才能融入",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 只和一两个好朋友玩",scores:{personality:2,career:2,love:3,health:2}},{text:"D. 更喜欢自己一个人玩",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的创造力表现是？",options:[{text:"A. 喜欢编故事，想象力丰富",scores:{personality:2,career:2,love:3,health:2}},{text:"B. 喜欢用不同方式玩玩具",scores:{personality:3,career:3,love:2,health:2}},{text:"C. 喜欢按规则玩，创造力一般",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 动手能力强，喜欢制作",scores:{personality:3,career:3,love:2,health:2}}]},
+            {question:"孩子的记忆力表现是？",options:[{text:"A. 过目不忘，记忆力超群",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 对感兴趣的事物记得牢",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 记忆力正常，需要重复",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 对声音、语言记忆好",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的专注力表现是？",options:[{text:"A. 能长时间专注做一件事",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 专注力一般，容易分心",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 对喜欢的事能专注很久",scores:{personality:3,career:2,love:2,health:2}},{text:"D. 专注力时间短，但转换快",scores:{personality:3,career:3,love:2,health:2}}]},
+            {question:"孩子的表达能力表现是？",options:[{text:"A. 能清楚表达自己的想法",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 表达不清，需要大人猜",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 能用简单词语表达",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 善于用肢体语言表达",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的理解能力表现是？",options:[{text:"A. 一说就懂，理解能力强",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 需要反复解释才能理解",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 理解能力正常，按部就班",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 能理解言外之意",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的动手能力表现是？",options:[{text:"A. 手很巧，什么都想自己做",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 动手能力一般，需要帮助",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 喜欢拆东西，探索欲强",scores:{personality:3,career:3,love:2,health:2}},{text:"D. 动手能力弱，但观察力强",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的适应能力表现是？",options:[{text:"A. 到新环境很快适应",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 需要时间适应新环境",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 适应能力一般，但不排斥",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 对新环境比较敏感",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的竞争意识表现是？",options:[{text:"A. 好胜心强，什么都想争第一",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 竞争意识一般，随遇而安",scores:{personality:2,career:2,love:2,health:3}},{text:"C. 有竞争意识，但输得起",scores:{personality:3,career:2,love:2,health:2}},{text:"D. 不喜欢竞争，更喜欢合作",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的感恩之心表现是？",options:[{text:"A. 会主动说谢谢，懂得感恩",scores:{personality:2,career:2,love:3,health:2}},{text:"B. 需要提醒才会说谢谢",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 心里知道，但不善于表达",scores:{personality:2,career:2,love:3,health:2}},{text:"D. 还没有这方面意识",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的自律性表现是？",options:[{text:"A. 能自觉遵守规则",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 需要大人监督才能遵守",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 有时遵守，有时违反",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 不喜欢受规则约束",scores:{personality:3,career:3,love:2,health:2}}]},
+            {question:"孩子的同理心表现是？",options:[{text:"A. 看到别人哭会安慰",scores:{personality:2,career:2,love:3,health:2}},{text:"B. 不太理解别人的情绪",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 会受别人情绪影响",scores:{personality:2,career:2,love:3,health:2}},{text:"D. 同理心一般，需要引导",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的幽默感表现是？",options:[{text:"A. 喜欢做鬼脸逗人笑",scores:{personality:2,career:2,love:3,health:2}},{text:"B. 能理解笑话，会开心",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 幽默感一般，反应平淡",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 有自己独特的笑点",scores:{personality:2,career:2,love:3,health:2}}]},
+            {question:"孩子的勇气表现是？",options:[{text:"A. 胆子大，什么都不怕",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 胆子小，需要大人陪伴",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 虽然害怕，但会尝试",scores:{personality:3,career:2,love:2,health:2}},{text:"D. 只对特定事物害怕",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的决策能力表现是？",options:[{text:"A. 能自己做选择，很果断",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 犹豫不决，需要大人帮忙",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 会纠结，但能做出选择",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 喜欢让别人做决定",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的时间观念表现是？",options:[{text:"A. 有时间观念，做事不拖拉",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 时间观念弱，需要催促",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 对感兴趣的事很准时",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 还没有时间观念",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的理财意识表现是？",options:[{text:"A. 知道钱来之不易，会节省",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 看到喜欢的就要买",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 对钱有概念，但不会管理",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 喜欢存钱，有储蓄意识",scores:{personality:3,career:3,love:2,health:2}}]},
+            {question:"孩子的健康意识表现是？",options:[{text:"A. 知道讲卫生，爱干净",scores:{personality:2,career:2,love:2,health:3}},{text:"B. 需要提醒才会注意卫生",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 卫生习惯一般，需要培养",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 不喜欢受卫生习惯约束",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的家庭观念表现是？",options:[{text:"A. 很依恋家人，家庭观念强",scores:{personality:2,career:2,love:3,health:2}},{text:"B. 更喜欢和小朋友玩",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 家庭观念一般，需要培养",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 很护着家人，有责任感",scores:{personality:3,career:2,love:3,health:2}}]},
+            {question:"孩子对传统文化的兴趣是？",options:[{text:"A. 喜欢听历史故事",scores:{personality:3,career:2,love:3,health:2}},{text:"B. 喜欢背诵古诗词",scores:{personality:3,career:3,love:2,health:2}},{text:"C. 喜欢传统节日",scores:{personality:2,career:2,love:3,health:2}},{text:"D. 兴趣一般",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的学习态度是？",options:[{text:"A. 主动学习，不用大人催",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 需要大人督促才学习",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 学习态度一般，时好时坏",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 不喜欢学习，喜欢玩",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的想象力表现是？",options:[{text:"A. 想象力丰富，经常有奇思妙想",scores:{personality:2,career:2,love:3,health:2}},{text:"B. 想象力一般，比较现实",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 喜欢看动画片，想象力不错",scores:{personality:2,career:2,love:3,health:2}},{text:"D. 不太爱想象，喜欢实际的东西",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"孩子的忍耐力表现是？",options:[{text:"A. 忍耐力很强，能吃苦",scores:{personality:3,career:3,love:2,health:3}},{text:"B. 忍耐力一般，容易放弃",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 对喜欢的事忍耐力强",scores:{personality:3,career:2,love:2,health:2}},{text:"D. 忍耐力很差，没耐心",scores:{personality:2,career:2,love:2,health:2}}]}
+        ];
+
+        // 精简为40道成人测试题（保留最核心的维度）
+        const adultQuestions = [
+            {question:"你在团队中通常扮演什么角色？",options:[{text:"A. 领导者，负责决策和指挥",scores:{personality:3,career:3,love:1,health:1}},{text:"B. 协调者，负责沟通和调解",scores:{personality:2,career:2,love:3,health:2}},{text:"C. 执行者，负责完成具体任务",scores:{personality:2,career:2,love:2,health:3}},{text:"D. 创新者，负责提出新想法",scores:{personality:3,career:3,love:2,health:1}}]},
+            {question:"面对压力时你通常会？",options:[{text:"A. 迎难而上，主动解决问题",scores:{personality:3,career:3,love:1,health:1}},{text:"B. 找人倾诉，寻求帮助",scores:{personality:1,career:1,love:3,health:2}},{text:"C. 冷静分析，制定计划",scores:{personality:2,career:2,love:2,health:3}},{text:"D. 逃避现实，拖延时间",scores:{personality:1,career:1,love:1,health:1}}]},
+            {question:"你的消费观念是？",options:[{text:"A. 能赚会花，及时行乐",scores:{personality:3,career:3,love:2,health:1}},{text:"B. 精打细算，储蓄为主",scores:{personality:2,career:2,love:2,health:3}},{text:"C. 量力而行，适度消费",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 超前消费，享受当下",scores:{personality:3,career:1,love:2,health:1}}]},
+            {question:"你对工作的态度是？",options:[{text:"A. 追求事业成功，有野心",scores:{personality:3,career:3,love:1,health:1}},{text:"B. 工作稳定就好，不求大富大贵",scores:{personality:2,career:2,love:2,health:3}},{text:"C. 喜欢有挑战性的工作",scores:{personality:3,career:3,love:2,health:2}},{text:"D. 工作只是谋生手段，生活更重要",scores:{personality:2,career:1,love:3,health:2}}]},
+            {question:"你在感情中是？",options:[{text:"A. 主动追求，敢爱敢恨",scores:{personality:3,career:2,love:3,health:1}},{text:"B. 被动等待，比较矜持",scores:{personality:1,career:2,love:2,health:2}},{text:"C. 理性对待，不轻易投入",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 感性为主，容易一见钟情",scores:{personality:2,career:1,love:3,health:1}}]},
+            {question:"你的社交圈是？",options:[{text:"A. 朋友很多，人脉广泛",scores:{personality:3,career:3,love:3,health:2}},{text:"B. 朋友不多，但都是知己",scores:{personality:2,career:2,love:3,health:3}},{text:"C. 社交一般，随缘交友",scores:{personality:2,career:2,love:2,health:2}},{text:"D. 喜欢独处，社交较少",scores:{personality:1,career:1,love:1,health:2}}]},
+            {question:"你对未来的规划是？",options:[{text:"A. 目标明确，按计划执行",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 走一步看一步，顺其自然",scores:{personality:2,career:2,love:3,health:2}},{text:"C. 经常变化，追求新鲜感",scores:{personality:2,career:2,love:2,health:1}},{text:"D. 没有规划，得过且过",scores:{personality:1,career:1,love:1,health:1}}]},
+            {question:"你处理矛盾的方式是？",options:[{text:"A. 直接沟通，解决问题",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 冷战回避，等待对方妥协",scores:{personality:1,career:1,love:1,health:1}},{text:"C. 寻求第三方调解",scores:{personality:2,career:2,love:3,health:2}},{text:"D. 妥协退让，避免冲突",scores:{personality:1,career:1,love:3,health:2}}]},
+            {question:"你的学习能力是？",options:[{text:"A. 学习能力强，接受新事物快",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 学习能力一般，需要时间消化",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 对感兴趣的东西学习快",scores:{personality:3,career:2,love:2,health:2}},{text:"D. 不太喜欢学习新东西",scores:{personality:1,career:1,love:1,health:1}}]},
+            {question:"你的时间管理能力是？",options:[{text:"A. 时间管理很好，效率很高",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 时间管理一般，偶尔拖延",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 经常拖延，需要别人提醒",scores:{personality:1,career:1,love:2,health:1}},{text:"D. 没有时间观念，随心所欲",scores:{personality:1,career:1,love:1,health:1}}]},
+            {question:"你对金钱的看法是？",options:[{text:"A. 金钱是万能的，越多越好",scores:{personality:3,career:3,love:1,health:1}},{text:"B. 金钱不是万能的，但没有钱是万万不能的",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 够用就好，不必追求太多",scores:{personality:2,career:1,love:3,health:3}},{text:"D. 视金钱如粪土，精神追求更重要",scores:{personality:1,career:1,love:3,health:2}}]},
+            {question:"你的决策风格是？",options:[{text:"A. 果断决策，不犹豫",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 深思熟虑，谨慎决策",scores:{personality:2,career:2,love:2,health:3}},{text:"C. 容易纠结，需要别人建议",scores:{personality:1,career:1,love:3,health:2}},{text:"D. 冲动决策，事后后悔",scores:{personality:3,career:1,love:1,health:1}}]},
+            {question:"你对冒险的态度是？",options:[{text:"A. 喜欢冒险，追求刺激",scores:{personality:3,career:3,love:2,health:1}},{text:"B. 偶尔冒险，尝试新鲜事物",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 不喜欢冒险，追求稳定",scores:{personality:2,career:2,love:2,health:3}},{text:"D. 非常害怕冒险，安于现状",scores:{personality:1,career:1,love:2,health:2}}]},
+            {question:"你的责任心是？",options:[{text:"A. 责任心很强，说到做到",scores:{personality:3,career:3,love:3,health:2}},{text:"B. 责任心一般，能完成分内事",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 责任心较弱，经常推卸责任",scores:{personality:1,career:1,love:1,health:1}},{text:"D. 看情况而定，对重要的事负责",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"你的情绪控制能力是？",options:[{text:"A. 情绪控制很好，很少发脾气",scores:{personality:2,career:2,love:2,health:3}},{text:"B. 情绪控制一般，偶尔会失控",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 情绪容易激动，经常发脾气",scores:{personality:3,career:1,love:1,health:1}},{text:"D. 情绪比较敏感，容易受影响",scores:{personality:1,career:1,love:3,health:1}}]},
+            {question:"你对他人的信任度是？",options:[{text:"A. 很容易相信别人",scores:{personality:1,career:1,love:3,health:1}},{text:"B. 比较谨慎，不会轻易相信别人",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 只相信家人和好朋友",scores:{personality:2,career:2,love:3,health:2}},{text:"D. 很难相信任何人",scores:{personality:1,career:2,love:1,health:1}}]},
+            {question:"你的生活态度是？",options:[{text:"A. 积极乐观，充满正能量",scores:{personality:3,career:3,love:3,health:3}},{text:"B. 比较现实，客观看待生活",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 有些悲观，容易消极",scores:{personality:1,career:1,love:1,health:1}},{text:"D. 随遇而安，佛系生活",scores:{personality:2,career:1,love:3,health:2}}]},
+            {question:"你对竞争的态度是？",options:[{text:"A. 喜欢竞争，享受胜利的感觉",scores:{personality:3,career:3,love:1,health:2}},{text:"B. 不喜欢竞争，但也不会认输",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 讨厌竞争，喜欢和平",scores:{personality:1,career:1,love:3,health:2}},{text:"D. 无所谓，顺其自然",scores:{personality:2,career:1,love:2,health:2}}]},
+            {question:"你的创造力是？",options:[{text:"A. 创造力很强，经常有新点子",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 创造力一般，能完成本职工作",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 创造力较弱，喜欢按部就班",scores:{personality:1,career:1,love:2,health:2}},{text:"D. 没有创造力，只会模仿",scores:{personality:1,career:1,love:1,health:1}}]},
+            {question:"你的沟通能力是？",options:[{text:"A. 沟通能力很强，善于表达",scores:{personality:3,career:3,love:3,health:2}},{text:"B. 沟通能力一般，能正常交流",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 沟通能力较弱，不善于表达",scores:{personality:1,career:1,love:1,health:1}},{text:"D. 不喜欢沟通，喜欢独处",scores:{personality:1,career:1,love:1,health:2}}]},
+            {question:"你对家庭的重视程度是？",options:[{text:"A. 家庭最重要，事业其次",scores:{personality:2,career:1,love:3,health:3}},{text:"B. 家庭和事业同等重要",scores:{personality:2,career:2,love:3,health:2}},{text:"C. 事业最重要，家庭其次",scores:{personality:3,career:3,love:1,health:1}},{text:"D. 不太重视家庭，更看重个人自由",scores:{personality:1,career:2,love:1,health:2}}]},
+            {question:"你对朋友的态度是？",options:[{text:"A. 重情重义，为朋友两肋插刀",scores:{personality:2,career:2,love:3,health:2}},{text:"B. 君子之交淡如水",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 朋友是用来利用的",scores:{personality:3,career:3,love:1,health:1}},{text:"D. 没有真正的朋友，只有利益关系",scores:{personality:1,career:2,love:1,health:1}}]},
+            {question:"你对健康的重视程度是？",options:[{text:"A. 非常重视，经常锻炼养生",scores:{personality:2,career:2,love:2,health:3}},{text:"B. 比较重视，偶尔锻炼",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 不太重视，年轻就是资本",scores:{personality:2,career:3,love:2,health:1}},{text:"D. 完全不重视，随心所欲",scores:{personality:1,career:2,love:1,health:1}}]},
+            {question:"你对学习的态度是？",options:[{text:"A. 活到老学到老，不断提升自己",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 有需要才会学习",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 不喜欢学习，觉得没用",scores:{personality:1,career:1,love:1,health:1}},{text:"D. 学习是学生的事，工作后不用学",scores:{personality:1,career:1,love:1,health:1}}]},
+            {question:"你对爱情的看法是？",options:[{text:"A. 相信真爱，渴望浪漫的爱情",scores:{personality:2,career:1,love:3,health:2}},{text:"B. 爱情是奢侈品，可有可无",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 爱情最终会变成亲情",scores:{personality:2,career:2,love:3,health:2}},{text:"D. 不相信爱情，只相信自己",scores:{personality:1,career:2,love:1,health:1}}]},
+            {question:"你对婚姻的看法是？",options:[{text:"A. 婚姻是爱情的坟墓",scores:{personality:1,career:2,love:1,health:1}},{text:"B. 婚姻是人生的必经之路",scores:{personality:2,career:2,love:3,health:2}},{text:"C. 婚姻需要双方共同经营",scores:{personality:2,career:2,love:3,health:2}},{text:"D. 婚姻是一种责任，不是爱情",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"你对事业的追求是？",options:[{text:"A. 追求权力和地位",scores:{personality:3,career:3,love:1,health:1}},{text:"B. 追求财富和成功",scores:{personality:3,career:3,love:2,health:2}},{text:"C. 追求自我实现和价值",scores:{personality:3,career:2,love:2,health:2}},{text:"D. 没有追求，混日子就行",scores:{personality:1,career:1,love:1,health:1}}]},
+            {question:"你对失败的态度是？",options:[{text:"A. 失败是成功之母，从中吸取教训",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 失败很正常，平常心对待",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 害怕失败，不敢尝试",scores:{personality:1,career:1,love:2,health:1}},{text:"D. 失败了就放弃，换个方向",scores:{personality:1,career:1,love:1,health:1}}]},
+            {question:"你对批评的态度是？",options:[{text:"A. 虚心接受，有则改之无则加勉",scores:{personality:2,career:3,love:2,health:2}},{text:"B. 表面接受，心里不服",scores:{personality:2,career:2,love:1,health:1}},{text:"C. 非常反感，会反驳",scores:{personality:3,career:1,love:1,health:1}},{text:"D. 无所谓，左耳进右耳出",scores:{personality:1,career:1,love:2,health:1}}]},
+            {question:"你对承诺的态度是？",options:[{text:"A. 一诺千金，说到做到",scores:{personality:3,career:3,love:3,health:2}},{text:"B. 尽量做到，做不到会说明",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 随口说说，不必当真",scores:{personality:1,career:1,love:1,health:1}},{text:"D. 看情况而定，能做到就做",scores:{personality:2,career:2,love:2,health:2}}]},
+            {question:"你对规则的态度是？",options:[{text:"A. 严格遵守规则",scores:{personality:2,career:2,love:2,health:3}},{text:"B. 遵守规则，但会灵活变通",scores:{personality:2,career:3,love:2,health:2}},{text:"C. 不喜欢规则，喜欢自由",scores:{personality:3,career:2,love:2,health:1}},{text:"D. 规则是给别人定的，自己可以不遵守",scores:{personality:3,career:1,love:1,health:1}}]},
+            {question:"你对传统的态度是？",options:[{text:"A. 尊重传统，继承发扬",scores:{personality:2,career:2,love:3,health:2}},{text:"B. 取其精华，去其糟粕",scores:{personality:3,career:3,love:2,health:2}},{text:"C. 传统过时了，应该抛弃",scores:{personality:3,career:2,love:1,health:1}},{text:"D. 无所谓，与我无关",scores:{personality:1,career:1,love:1,health:1}}]},
+            {question:"你对旅游的态度是？",options:[{text:"A. 非常喜欢，经常旅游",scores:{personality:3,career:2,love:3,health:2}},{text:"B. 比较喜欢，偶尔旅游",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 不太喜欢，觉得麻烦",scores:{personality:1,career:1,love:1,health:2}},{text:"D. 完全不喜欢，宁愿在家",scores:{personality:1,career:1,love:1,health:2}}]},
+            {question:"你对美食的态度是？",options:[{text:"A. 非常喜欢，喜欢尝试各种美食",scores:{personality:3,career:2,love:3,health:2}},{text:"B. 比较喜欢，好吃就行",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 不太喜欢，吃饱就行",scores:{personality:1,career:1,love:1,health:2}},{text:"D. 无所谓，什么都吃",scores:{personality:1,career:1,love:1,health:2}}]},
+            {question:"你对运动的态度是？",options:[{text:"A. 非常喜欢，每天都运动",scores:{personality:3,career:2,love:2,health:3}},{text:"B. 比较喜欢，偶尔运动",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 不太喜欢，很少运动",scores:{personality:1,career:1,love:1,health:1}},{text:"D. 完全不喜欢，从不运动",scores:{personality:1,career:1,love:1,health:1}}]},
+            {question:"你对阅读的态度是？",options:[{text:"A. 非常喜欢，每天都阅读",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 比较喜欢，偶尔阅读",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 不太喜欢，很少阅读",scores:{personality:1,career:1,love:1,health:1}},{text:"D. 完全不喜欢，从不阅读",scores:{personality:1,career:1,love:1,health:1}}]},
+            {question:"你对工作的满意度是？",options:[{text:"A. 非常满意，很喜欢现在的工作",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 比较满意，还可以",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 不太满意，想换工作",scores:{personality:1,career:1,love:1,health:1}},{text:"D. 完全不满意，非常想换工作",scores:{personality:1,career:1,love:1,health:1}}]},
+            {question:"你对生活的满意度是？",options:[{text:"A. 非常满意，生活很幸福",scores:{personality:3,career:2,love:3,health:3}},{text:"B. 比较满意，生活还可以",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 不太满意，生活有很多不如意",scores:{personality:1,career:1,love:1,health:1}},{text:"D. 完全不满意，生活很糟糕",scores:{personality:1,career:1,love:1,health:1}}]},
+            {question:"你对自己的评价是？",options:[{text:"A. 非常优秀，很自信",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 比较优秀，还可以",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 一般般，没什么优点",scores:{personality:1,career:1,love:1,health:1}},{text:"D. 很差，很自卑",scores:{personality:1,career:1,love:1,health:1}}]},
+            {question:"你对未来的信心是？",options:[{text:"A. 非常有信心，相信未来会更好",scores:{personality:3,career:3,love:2,health:2}},{text:"B. 比较有信心，未来应该会不错",scores:{personality:2,career:2,love:2,health:2}},{text:"C. 不太有信心，未来不确定",scores:{personality:1,career:1,love:1,health:1}},{text:"D. 完全没有信心，未来很迷茫",scores:{personality:1,career:1,love:1,health:1}}]}
+        ];
+
+        // 初始化年份选择器
+        function initYearSelect() {
+            const yearSelect = document.getElementById('year');
+            const currentYear = new Date().getFullYear();
+            
+            for (let year = currentYear; year >= 1950; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year + '年';
+                yearSelect.appendChild(option);
+            }
+        }
+
+        // 初始化月份选择器
+        function initMonthSelect() {
+            const monthSelect = document.getElementById('month');
+            
+            for (let month = 1; month <= 12; month++) {
+                const option = document.createElement('option');
+                option.value = month;
+                option.textContent = month + '月';
+                monthSelect.appendChild(option);
+            }
+        }
+
+        // 初始化日期选择器
+        function initDaySelect() {
+            const daySelect = document.getElementById('day');
+            updateDayOptions();
+            
+            document.getElementById('year').addEventListener('change', updateDayOptions);
+            document.getElementById('month').addEventListener('change', updateDayOptions);
+        }
+
+        // 更新日期选项
+        function updateDayOptions() {
+            const year = parseInt(document.getElementById('year').value);
+            const month = parseInt(document.getElementById('month').value);
+            const daySelect = document.getElementById('day');
+            const currentDay = parseInt(daySelect.value);
+            
+            // 获取当月天数
+            const daysInMonth = new Date(year, month, 0).getDate();
+            
+            // 清空现有选项
+            daySelect.innerHTML = '';
+            
+            // 添加新选项
+            for (let day = 1; day <= daysInMonth; day++) {
+                const option = document.createElement('option');
+                option.value = day;
+                option.textContent = day + '日';
+                daySelect.appendChild(option);
+            }
+            
+            // 保持原来的选择
+            if (currentDay <= daysInMonth) {
+                daySelect.value = currentDay;
+            }
+        }
+
+        // 选择测试类型
+        function selectTest(type) {
+            currentTestType = type;
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('baziSection').style.display = 'block';
+            
+            // 更新标题和题目数量
+            document.getElementById('baziTitle').textContent = 
+                type === 'child' ? '宝宝八字信息' : '您的八字信息';
+            
+            window.scrollTo(0, 0);
+        }
+
+        // 计算八字
+        function calculateBazi(year, month, day, hour) {
+            // 简化的八字计算（实际项目中应使用更准确的算法）
+            const baseDate = new Date(1900, 0, 1);
+            const targetDate = new Date(year, month - 1, day);
+            const daysDiff = Math.floor((targetDate - baseDate) / (1000 * 60 * 60 * 24));
+            
+            // 计算年柱
+            const yearGan = (year - 4) % 10;
+            const yearZhi = (year - 4) % 12;
+            
+            // 计算月柱
+            const monthGan = (yearGan * 2 + month) % 10;
+            const monthZhi = (month + 1) % 12;
+            
+            // 计算日柱
+            const dayGan = (daysDiff + 9) % 10;
+            const dayZhi = (daysDiff + 1) % 12;
+            
+            // 计算时柱
+            let hourGan = 0;
+            if (hour !== 'unknown') {
+                hourGan = (dayGan * 2 + parseInt(hour)) % 10;
+            }
+            const hourZhi = hour === 'unknown' ? '未知' : diZhi[parseInt(hour)];
+            
+            return {
+                year: tianGan[yearGan] + diZhi[yearZhi],
+                month: tianGan[monthGan] + diZhi[monthZhi],
+                day: tianGan[dayGan] + diZhi[dayZhi],
+                hour: hour === 'unknown' ? '未知' : tianGan[hourGan] + hourZhi
+            };
+        }
+
+        // 计算五行
+        function calculateWuxing(bazi) {
+            const wuxing = { '木': 0, '火': 0, '土': 0, '金': 0, '水': 0 };
+            
+            // 分析年柱
+            wuxing[tianGanWuxing[bazi.year[0]]]++;
+            wuxing[diZhiWuxing[bazi.year[1]]]++;
+            
+            // 分析月柱
+            wuxing[tianGanWuxing[bazi.month[0]]]++;
+            wuxing[diZhiWuxing[bazi.month[1]]]++;
+            
+            // 分析日柱
+            wuxing[tianGanWuxing[bazi.day[0]]]++;
+            wuxing[diZhiWuxing[bazi.day[1]]]++;
+            
+            // 分析时柱
+            if (bazi.hour !== '未知') {
+                wuxing[tianGanWuxing[bazi.hour[0]]]++;
+                wuxing[diZhiWuxing[bazi.hour[1]]]++;
+            }
+            
+            return wuxing;
+        }
+
+        // 判断喜用神
+        function determineXiYongShen(wuxing) {
+            // 简化的喜用神判断逻辑（实际应根据日主强弱判断）
+            const sorted = Object.entries(wuxing).sort((a, b) => a[1] - b[1]);
+            const weakest = sorted[0][0];
+            const secondWeakest = sorted[1][0];
+            
+            return `喜用神：${weakest}，次喜用神：${secondWeakest}。建议在名字和生活中多使用${weakest}属性的元素。`;
+        }
+
+        // 开始测试
+        document.getElementById('baziForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const year = document.getElementById('year').value;
+            const month = document.getElementById('month').value;
+            const day = document.getElementById('day').value;
+            const hour = document.getElementById('hour').value;
+            const gender = document.getElementById('gender').value;
+            
+            // 计算八字
+            baziData = {
+                year, month, day, hour, gender,
+                bazi: calculateBazi(parseInt(year), parseInt(month), parseInt(day), hour),
+                wuxing: null,
+                xiyongshen: null
+            };
+            
+            baziData.wuxing = calculateWuxing(baziData.bazi);
+            baziData.xiyongshen = determineXiYongShen(baziData.wuxing);
+            
+            // 进入测试页面
+            document.getElementById('baziSection').style.display = 'none';
+            document.getElementById('quizSection').style.display = 'block';
+            
+            currentQuestion = 0;
+            scores = { personality: 0, career: 0, love: 0, health: 0 };
+            showQuestion();
+            window.scrollTo(0, 0);
+        });
+
+        // 显示题目
+        function showQuestion() {
+            const questions = currentTestType === 'child' ? childQuestions : adultQuestions;
+            const question = questions[currentQuestion];
+            
+            // 更新题目数量显示
+            document.getElementById('questionNumber').textContent = `第 ${currentQuestion + 1} 题 / 共 ${questions.length} 题`;
+            document.getElementById('questionText').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            selectedOption = null;
+            document.getElementById('nextBtn').style.display = 'none';
+            
+            const progress = ((currentQuestion) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = option.text;
+                optionDiv.onclick = () => selectOption(index, option);
+                optionsContainer.appendChild(optionDiv);
+            });
+        }
+
+        // 选择选项
+        function selectOption(index, option) {
+            selectedOption = option;
+            const options = document.querySelectorAll('.option');
+            options.forEach((opt, i) => {
+                opt.classList.remove('selected');
+                if (i === index) {
+                    opt.classList.add('selected');
+                }
+            });
+            document.getElementById('nextBtn').style.display = 'block';
+        }
+
+        // 下一题
+        function nextQuestion() {
+            if (selectedOption) {
+                scores.personality += selectedOption.scores.personality;
+                scores.career += selectedOption.scores.career;
+                scores.love += selectedOption.scores.love;
+                scores.health += selectedOption.scores.health;
+                
+                currentQuestion++;
+                const questions = currentTestType === 'child' ? childQuestions : adultQuestions;
+                
+                if (currentQuestion < questions.length) {
+                    showQuestion();
+                } else {
+                    showResult();
+                }
+            }
+        }
+
+        // 生成结果
+        function generatePersonalityResult(score, wuxing) {
+            let result = `您的八字五行中，${Object.entries(wuxing).sort((a,b) => b[1]-a[1])[0][0]}最旺，`;
+            result += `${Object.entries(wuxing).sort((a,b) => a[1]-b[1])[0][0]}最弱。`;
+            
+            if (score >= 100) {
+                result += " 性格开朗外向，自信果断，有领导才能，做事积极主动，不畏艰难。但有时过于急躁，容易冲动。建议培养耐心和倾听他人意见的习惯。";
+            } else if (score >= 75) {
+                result += " 性格温和稳重，待人真诚，有责任心，做事踏实认真。但有时过于保守，缺乏冒险精神。建议适当放开自己，勇于尝试新事物。";
+            } else if (score >= 50) {
+                result += " 性格复杂多变，时而热情时而冷静，思维活跃，富有创造力。但情绪波动较大，容易受外界影响。建议学会调节情绪，保持心态平和。";
+            } else {
+                result += " 性格内向敏感，心思细腻，观察力强，善于思考。但自信心不足，容易自卑。建议多与人交往，培养自己的兴趣爱好，提升自信心。";
+            }
+            
+            return result;
+        }
+
+        function generateCareerResult(score, wuxing) {
+            let result = "";
+            
+            if (wuxing.木 > wuxing.金 && wuxing.木 > wuxing.水) {
+                result += "木旺之人适合从事文化、教育、艺术、林业等行业。";
+            } else if (wuxing.火 > wuxing.木 && wuxing.火 > wuxing.土) {
+                result += "火旺之人适合从事能源、餐饮、娱乐、互联网等行业。";
+            } else if (wuxing.土 > wuxing.火 && wuxing.土 > wuxing.金) {
+                result += "土旺之人适合从事房地产、建筑、农业、金融等行业。";
+            } else if (wuxing.金 > wuxing.土 && wuxing.金 > wuxing.水) {
+                result += "金旺之人适合从事金融、法律、机械、五金等行业。";
+            } else {
+                result += "水旺之人适合从事物流、旅游、水产、信息等行业。";
+            }
+            
+            if (score >= 100) {
+                result += " 事业运极佳，有创业天赋，能够白手起家，成就一番事业。30岁前会遇到重要贵人，帮助您事业腾飞。建议抓住机会，大胆创业。";
+            } else if (score >= 75) {
+                result += " 事业运中上，适合在大公司发展，能够稳步晋升，成为中层管理者。35岁左右事业会达到高峰。建议专注于一个领域，深入钻研。";
+            } else if (score >= 50) {
+                result += " 事业运平稳，适合从事稳定的工作，如公务员、教师等。虽然不会大富大贵，但生活安逸稳定。建议不要轻易跳槽，积累经验最重要。";
+            } else {
+                result += " 事业运多波折，适合自由职业或个体经营。虽然前期会比较辛苦，但中年后会逐渐好转。建议培养一技之长，靠手艺吃饭。";
+            }
+            
+            return result;
+        }
+
+        function generateLoveResult(score, wuxing) {
+            let result = "";
+            
+            if (wuxing.水 > wuxing.火) {
+                result += "水旺之人感情丰富细腻，浪漫多情，但容易多愁善感。";
+            } else if (wuxing.火 > wuxing.水) {
+                result += "火旺之人热情奔放，敢爱敢恨，但脾气较为急躁。";
+            } else {
+                result += "五行平衡之人感情稳定，懂得包容和理解对方。";
+            }
+            
+            if (score >= 100) {
+                result += " 桃花运旺盛，异性缘极佳，25岁左右会遇到正缘，婚姻幸福美满。建议珍惜眼前人，不要三心二意。";
+            } else if (score >= 75) {
+                result += " 感情运平稳，28岁左右结婚最合适，婚后生活平淡幸福。建议多与伴侣沟通，增进感情。";
+            } else if (score >= 50) {
+                result += " 感情运有起伏，早年可能会经历几段失败的感情，但最终会找到适合自己的人。建议不要急于结婚，多了解对方。";
+            } else {
+                result += " 感情运较为坎坷，适合晚婚，30岁以后结婚更稳定。建议提升自己，让自己变得更优秀，自然会吸引到对的人。";
+            }
+            
+            return result;
+        }
+
+        function generateHealthResult(score, wuxing) {
+            let result = "根据您的五行分析，需要注意以下方面：";
+            
+            if (wuxing.木 < 2) {
+                result += " 木弱，容易出现肝胆方面的问题，建议少熬夜，多吃绿色蔬菜。";
+            }
+            if (wuxing.火 < 2) {
+                result += " 火弱，容易出现心脏和血液循环方面的问题，建议多运动，注意保暖。";
+            }
+            if (wuxing.土 < 2) {
+                result += " 土弱，容易出现脾胃方面的问题，建议饮食规律，少吃生冷食物。";
+            }
+            if (wuxing.金 < 2) {
+                result += " 金弱，容易出现呼吸系统方面的问题，建议少抽烟，多呼吸新鲜空气。";
+            }
+            if (wuxing.水 < 2) {
+                result += " 水弱，容易出现肾脏和泌尿系统方面的问题，建议多喝水，不要憋尿。";
+            }
+            
+            if (score >= 100) {
+                result += " 整体身体素质较好，只要保持良好的生活习惯，就能健康长寿。";
+            } else if (score >= 75) {
+                result += " 身体素质一般，需要注意劳逸结合，避免过度劳累。";
+            } else if (score >= 50) {
+                result += " 身体素质较弱，容易生病，建议加强锻炼，增强体质。";
+            } else {
+                result += " 身体素质较差，需要特别注意保养，定期体检，预防疾病。";
+            }
+            
+            return result;
+        }
+
+        function generateNameAdvice(wuxing, xiyongshen) {
+            const xi = xiyongshen.split('：')[1].split('，')[0];
+            const advice = {
+                '木': '建议使用带"木"字旁的字，如：林、森、柏、桐、楷、楠等。避免使用过多金属性的字。',
+                '火': '建议使用带"火"字旁的字，如：炎、烨、煜、煊、灿、烁等。避免使用过多水属性的字。',
+                '土': '建议使用带"土"字旁的字，如：坤、垣、城、培、均、圣等。避免使用过多木属性的字。',
+                '金': '建议使用带"金"字旁的字，如：铭、钧、锋、锐、锦、鑫等。避免使用过多火属性的字。',
+                '水': '建议使用带"水"字旁的字，如：泽、涵、浩、洋、涛、清等。避免使用过多土属性的字。'
+            };
+            
+            return `根据您的八字五行分析，您的喜用神为${xi}。${advice[xi]} 同时，名字要注意音律和谐，寓意美好，避免使用生僻字和多音字。建议咨询专业起名大师，为您定制最适合的名字。`;
+        }
+
+        // 显示结果
+        function showResult() {
+            document.getElementById('quizSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
+            document.getElementById('progressFill').style.width = '100%';
+            
+            // 显示八字信息
+            document.getElementById('baziInfo').textContent = 
+                `八字排盘：${baziData.bazi.year}年 ${baziData.bazi.month}月 ${baziData.bazi.day}日 ${baziData.bazi.hour}时`;
+            
+            // 显示五行统计
+            const wuxingGrid = document.getElementById('wuxingGrid');
+            wuxingGrid.innerHTML = '';
+            
+            const wuxingColors = {
+                '木': 'wuxing-wood',
+                '火': 'wuxing-fire',
+                '土': 'wuxing-earth',
+                '金': 'wuxing-metal',
+                '水': 'wuxing-water'
+            };
+            
+            for (const [element, count] of Object.entries(baziData.wuxing)) {
+                const div = document.createElement('div');
+                div.className = `wuxing-item ${wuxingColors[element]}`;
+                div.innerHTML = `<div>${element}</div><div>${count}个</div>`;
+                wuxingGrid.appendChild(div);
+            }
+            
+            // 显示喜用神
+            document.getElementById('xiyongshen').textContent = baziData.xiyongshen;
+            
+            // 生成各部分结果
+            document.getElementById('personalityResult').textContent = 
+                generatePersonalityResult(scores.personality, baziData.wuxing);
+            document.getElementById('careerResult').textContent = 
+                generateCareerResult(scores.career, baziData.wuxing);
+            document.getElementById('loveResult').textContent = 
+                generateLoveResult(scores.love, baziData.wuxing);
+            document.getElementById('healthResult').textContent = 
+                generateHealthResult(scores.health, baziData.wuxing);
+            document.getElementById('nameAdvice').textContent = 
+                generateNameAdvice(baziData.wuxing, baziData.xiyongshen);
+            
+            window.scrollTo(0, 0);
+        }
+
+        // 复制结果
+        function copyResult() {
+            const resultText = `
+【国学起名·八字命运综合报告】
+
+☯️ 八字五行分析
+${document.getElementById('baziInfo').textContent}
+五行统计：${Object.entries(baziData.wuxing).map(([k,v]) => `${k}:${v}`).join('，')}
+${document.getElementById('xiyongshen').textContent}
+
+🧠 性格特质分析
+${document.getElementById('personalityResult').textContent}
+
+💼 事业财运走向
+${document.getElementById('careerResult').textContent}
+
+💕 感情婚姻运势
+${document.getElementById('loveResult').textContent}
+
+🏥 健康注意事项
+${document.getElementById('healthResult').textContent}
+
+✍️ 起名/改名建议
+${document.getElementById('nameAdvice').textContent}
+            `.trim();
+            
+            navigator.clipboard.writeText(resultText).then(() => {
+                showToast();
+            }).catch(err => {
+                const textarea = document.createElement('textarea');
+                textarea.value = resultText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast();
+            });
+        }
+
+        // 显示提示
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2000);
+        }
+
+        // 返回首页
+        function backToHome() {
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('baziSection').style.display = 'none';
+            document.getElementById('quizSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'none';
+            window.scrollTo(0, 0);
+        }
+
+        // FAQ切换
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('span:last-child');
+            
+            answer.classList.toggle('active');
+            icon.textContent = answer.classList.contains('active') ? '−' : '+';
+        }
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            initYearSelect();
+            initMonthSelect();
+            initDaySelect();
+        }
+    </script>
+</body>
+</html>
