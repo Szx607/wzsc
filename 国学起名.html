@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>玄易国学 · 周易八字起名</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'brush';
+            src: local('KaiTi'), local('STKaiti');
+        }
+        @font-face {
+            font-family: 'serif';
+            src: local('SimSun'), local('STSong');
+        }
+    </style>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: '#F6F1E4',
+                        ink: '#121814',
+                        cinnabar: '#A82020',
+                        indigo: '#2C423B',
+                        gold: '#C8A97E',
+                    },
+                    fontFamily: {
+                        brush: ['brush', 'cursive'],
+                        serif: ['serif', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow-sm {
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            }
+            .ink-fade-in {
+                opacity: 0;
+                transform: translateY(30px);
+                transition: all 0.8s ease-out;
+            }
+            .ink-fade-in.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .bamboo-border {
+                border: 2px solid #C8A97E;
+                background: linear-gradient(90deg, rgba(200,169,126,0.1) 0%, transparent 10%, transparent 90%, rgba(200,169,126,0.1) 100%);
+            }
+            .scroll-bg {
+                background: linear-gradient(180deg, #E8E0CB 0%, #F6F1E4 5%, #F6F1E4 95%, #E8E0CB 100%);
+                border-left: 3px solid #C8A97E;
+                border-right: 3px solid #C8A97E;
+            }
+            .mobile-menu-open {
+                max-height: 300px !important;
+                padding: 1rem 0 !important;
+            }
+            .name-blur {
+                filter: blur(8px);
+                user-select: none;
+                pointer-events: none;
+            }
+            .unlock-overlay {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background: rgba(246, 241, 228, 0.7);
+                backdrop-filter: blur(2px);
+                border-radius: 0.5rem;
+            }
+            /* 新增：适配小屏手机的间距和字体 */
+            .mobile-fit {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+            .mobile-text-sm {
+                font-size: 0.875rem !important;
+            }
+            .mobile-grid-cols-2 {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+    </style>
+    
+    <style>
+        body {
+            background-color: #F6F1E4;
+            font-family: serif;
+            overflow-x: hidden;
+        }
+        
+        /* 水墨墨点特效 */
+        .ink-dot {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            background: rgba(18, 24, 20, 0.15);
+            z-index: 9999;
+            animation: inkDotSpread 2s ease-out forwards;
+        }
+        
+        @keyframes inkDotSpread {
+            0% {
+                transform: scale(0.2);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+        
+        /* 点击水墨晕染特效 */
+        .ink-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(18, 24, 20, 0.3) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 9998;
+            animation: inkRipple 0.8s ease-out forwards;
+        }
+        
+        @keyframes inkRipple {
+            0% {
+                transform: scale(0);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        /* 卡片悬浮效果 */
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(18, 24, 20, 0.15);
+            border-color: #C8A97E;
+        }
+        
+        .feature-card:hover .card-title {
+            color: #C8A97E;
+        }
+        
+        /* 导航栏滚动效果 */
+        .nav-scrolled {
+            background-color: rgba(246, 241, 228, 0.95) !important;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        
+        /* 输入框聚焦效果 */
+        .form-input:focus {
+            outline: none;
+            border-color: #A82020;
+            box-shadow: 0 0 0 3px rgba(168, 32, 32, 0.1);
+        }
+        
+        /* 卷轴展开动画 */
+        .scroll-text {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .scroll-text.show {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.6s ease-out;
+        }
+        
+        /* 结果容器样式（已移除高度限制和遮挡） */
+        .result-container {
+            position: relative;
+        }
+        
+        /* 侧边弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .sidebar-modal {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            max-width: 90vw;
+            height: 100vh;
+            background: #F6F1E4;
+            z-index: 10001;
+            transition: all 0.4s ease-out;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            /* 优化手机弹窗滚动 */
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .sidebar-modal.show {
+            right: 0;
+        }
+
+        /* 新增：解锁结果弹窗样式 */
+        .unlock-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
+            background: #F6F1E4;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 10002;
+            padding: 2rem;
+            border: 2px solid #C8A97E;
+            display: none;
+        }
+
+        .unlock-modal.show {
+            display: block;
+        }
+
+        .copy-btn {
+            background-color: #2C423B;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            background-color: #1e302a;
+        }
+
+        .copy-success {
+            color: #22c55e;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        /* 按钮通用样式 */
+        .btn-primary {
+            background-color: #A82020;
+            color: white;
+            font-family: brush;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        
+        .btn-primary:hover {
+            background-color: #8a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(168, 32, 32, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: #121814;
+            font-family: brush;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+            border: 2px solid #121814;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        
+        .btn-secondary:hover {
+            background-color: rgba(18, 24, 20, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* 优化手机适配 */
+        @media (max-width: 640px) {
+            .scroll-bg {
+                padding: 1rem !important;
+            }
+            .feature-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 16px rgba(18, 24, 20, 0.1);
+            }
+            .btn-primary, .btn-secondary {
+                padding: 0.6rem 1.2rem;
+                font-size: 1rem;
+            }
+            #babyBaziInfo, #baziInfo {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            #babyBaziInfo > div, #baziInfo > div {
+                margin-bottom: 0.5rem;
+            }
+            .unlock-overlay {
+                padding: 0 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .font-brush.text-5xl {
+                font-size: 3rem !important;
+            }
+            .font-brush.text-4xl {
+                font-size: 2.5rem !important;
+            }
+            .font-brush.text-2xl {
+                font-size: 1.5rem !important;
+            }
+            .sidebar-modal {
+                width: 100vw;
+                right: -100vw;
+            }
+        }
+    </style>
+</head>
+<body class="text-ink">
+    <!-- 导航栏 -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mobile-fit">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <span class="font-brush text-2xl text-ink mobile-text-sm">玄易国学 · 周易八字起名</span>
+                </div>
+                <!-- 桌面端导航 -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#home" class="font-brush text-lg hover:text-cinnabar transition-colors ink-click">首页</a>
+                        <a href="#baby" class="font-brush text-lg hover:text-cinnabar transition-colors ink-click">宝宝起名</a>
+                        <a href="#adult" class="font-brush text-lg hover:text-cinnabar transition-colors ink-click">成人改名</a>
+                        <a href="#principle" class="font-brush text-lg hover:text-cinnabar transition-colors ink-click">命理原理</a>
+                    </div>
+                </div>
+                <!-- 移动端汉堡按钮 -->
+                <div class="md:hidden">
+                    <button id="menuBtn" class="text-ink text-2xl ink-click">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- 移动端导航菜单 -->
+            <div id="mobileMenu" class="mobile-menu md:hidden hidden">
+                <div class="flex flex-col space-y-4 text-center">
+                    <a href="#home" class="font-brush text-lg hover:text-cinnabar transition-colors ink-click">首页</a>
+                    <a href="#baby" class="font-brush text-lg hover:text-cinnabar transition-colors ink-click">宝宝起名</a>
+                    <a href="#adult" class="font-brush text-lg hover:text-cinnabar transition-colors ink-click">成人改名</a>
+                    <a href="#principle" class="font-brush text-lg hover:text-cinnabar transition-colors ink-click">命理原理</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- 首屏Banner -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="https://aka.doubaocdn.com/s/CWgj1wJpx7" alt="水墨山水" class="w-full h-full object-cover opacity-80">
+            <div class="absolute inset-0 bg-paper/30"></div>
+            <!-- 太极暗纹 -->
+            <div class="absolute right-10 top-1/4 w-32 h-32 opacity-10">
+                <div class="w-full h-full rounded-full border-4 border-ink"></div>
+            </div>
+        </div>
+        
+        <div class="relative z-10 text-center px-4 ink-fade-in mobile-fit">
+            <h1 class="font-brush text-5xl md:text-7xl text-ink mb-6 text-shadow-sm">
+                四柱定命格，佳名伴一生
+            </h1>
+            <p class="text-lg md:text-xl text-indigo/80 mb-10 max-w-2xl mx-auto mobile-text-sm">
+                承周易古法 | 究天干地支 | 辨五行喜忌 | 定制国风吉名
+            </p>
+            <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                <a href="#baby" class="ink-click px-8 py-4 bg-cinnabar text-white font-brush text-xl rounded-sm hover:bg-cinnabar/90 transition-all shadow-lg mobile-text-sm">
+                    <i class="fa fa-child mr-2"></i>给孩子起名测算
+                </a>
+                <a href="#adult" class="ink-click px-8 py-4 border-2 border-ink text-ink font-brush text-xl rounded-sm hover:bg-ink/5 transition-all mobile-text-sm">
+                    <i class="fa fa-pencil mr-2"></i>成人专业改名测算
+                </a>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <i class="fa fa-angle-down text-ink/60 text-2xl"></i>
+        </div>
+    </section>
+    <!-- 命理测算原理板块 -->
+    <section id="principle" class="py-20 px-4 mobile-fit">
+        <div class="max-w-4xl mx-auto">
+            <div class="scroll-bg rounded-lg p-8 md:p-12 ink-fade-in relative">
+                <!-- 祥云装饰 -->
+                <div class="absolute -left-4 top-1/2 transform -translate-y-1/2 text-4xl text-gold/30">
+                    <i class="fa fa-cloud"></i>
+                </div>
+                <div class="absolute -right-4 top-1/2 transform -translate-y-1/2 text-4xl text-gold/30">
+                    <i class="fa fa-cloud"></i>
+                </div>
+                
+                <h2 class="font-brush text-4xl text-center text-ink mb-8 scroll-text">「易理为本 · 命理起名核心依据」</h2>
+                
+                <div class="space-y-4 text-lg text-indigo leading-relaxed mobile-text-sm">
+                    <p class="scroll-text" style="transition-delay: 0.1s">天地分阴阳，时序定干支。</p>
+                    <p class="scroll-text" style="transition-delay: 0.2s">人之一命，由年、月、日、时<strong class="text-cinnabar">四柱八字</strong>定格先天格局，</p>
+                    <p class="scroll-text" style="transition-delay: 0.3s">金木水火土五行循环生克，各有强弱、缺旺、喜忌。</p>
+                    <br>
+                    <p class="scroll-text" style="transition-delay: 0.4s">我们摒弃流水线起名，以传统命理学为根基：</p>
+                    <p class="scroll-text" style="transition-delay: 0.5s">拆解天干地支格局、平衡五行强弱、精准锁定<strong class="text-cinnabar">喜用神</strong>，</p>
+                    <p class="scroll-text" style="transition-delay: 0.6s">弥补命局短板、调和阴阳气场，</p>
+                    <p class="scroll-text" style="transition-delay: 0.7s">让名字贴合先天命理，助运纳吉、顺遂一生。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- 宝宝起名板块 -->
+    <section id="baby" class="py-20 px-4 bg-indigo/5 mobile-fit">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12 items-start">
+                <!-- 左侧插画 -->
+                <div class="ink-fade-in sticky top-24 order-2 md:order-1">
+                    <img src="https://aka.doubaocdn.com/s/1AnL1wJpxC" alt="水墨童子" class="w-full max-w-md mx-auto rounded-lg shadow-xl">
+                </div>
+                
+                <!-- 右侧内容区 -->
+                <div class="order-1 md:order-2 ink-fade-in">
+                    <h2 class="font-brush text-4xl text-ink mb-4">「孩童赐名 · 补五行 助学业 旺安康」</h2>
+                    <p class="text-indigo/80 mb-8 leading-relaxed mobile-text-sm">
+                        名为孩童一生之始，藏气运、定格局。<br>
+                        结合宝宝<strong>四柱生辰、天干地支、五行强弱、喜用神喜忌</strong>，<br>
+                        避开凶字、忌字、五行相克用字，<br>
+                        取自诗词风雅、周易吉字，为孩童定制清雅、福寿、聪慧好名。
+                    </p>
+                    
+                    <!-- 表单区域 -->
+                    <form id="babyForm" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-indigo mb-1">宝宝姓氏 <span class="text-cinnabar">*</span></label>
+                                <input name="surname" type="text" class="form-input w-full px-4 py-3 bamboo-border rounded-sm bg-paper/50" placeholder="请输入宝宝姓氏" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-indigo mb-1">宝宝性别 <span class="text-cinnabar">*</span></label>
+                                <select name="gender" class="form-input w-full px-4 py-3 bamboo-border rounded-sm bg-paper/50">
+                                    <option>男宝</option>
+                                    <option>女宝</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-indigo mb-1">阳历出生年月日 <span class="text-cinnabar">*</span></label>
+                                <input name="birthday" type="date" class="form-input w-full px-4 py-3 bamboo-border rounded-sm bg-paper/50" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-indigo mb-1">精准出生时辰 <span class="text-cinnabar">*</span></label>
+                                <input name="time" type="time" class="form-input w-full px-4 py-3 bamboo-border rounded-sm bg-paper/50" step="60" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm text-indigo mb-1">家族避讳字/禁用字</label>
+                            <input name="forbidden" type="text" class="form-input w-full px-4 py-3 bamboo-border rounded-sm bg-paper/50" placeholder="请输入需要避开的字，用逗号分隔">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm text-indigo mb-1">家长期许</label>
+                            <input name="expect" type="text" class="form-input w-full px-4 py-3 bamboo-border rounded-sm bg-paper/50" placeholder="如：聪慧/健康/富贵/文雅 等">
+                        </div>
+                        
+                        <button type="submit" class="ink-click w-full py-4 bg-cinnabar text-white font-brush text-xl rounded-sm hover:bg-cinnabar/90 transition-all shadow-lg mobile-text-sm">
+                            <i class="fa fa-calculator mr-2"></i>开始八字测算
+                        </button>
+                    </form>
+                    
+                    <!-- 结果展示区域（名字模糊掩盖） -->
+                    <div id="babyResult" class="hidden mt-10 scroll-bg rounded-lg p-6 result-container">
+                        <h3 class="font-brush text-2xl text-cinnabar mb-4 text-center">「您的宝宝专属起名测算结果」</h3>
+                        
+                        <!-- 命理分析（完全可见） -->
+                        <div class="mb-6">
+                            <h4 class="font-brush text-xl text-ink mb-3">一、四柱命理分析</h4>
+                            <div id="babyBaziInfo" class="grid grid-cols-4 gap-2 mb-4 mobile-grid-cols-2">
+                                <div class="p-2 text-center border border-indigo/20 rounded">
+                                    <div class="font-brush text-lg">年柱</div>
+                                    <div>癸卯</div>
+                                    <div class="text-xs text-indigo/60">水+木</div>
+                                </div>
+                                <div class="p-2 text-center border border-indigo/20 rounded">
+                                    <div class="font-brush text-lg">月柱</div>
+                                    <div>戊午</div>
+                                    <div class="text-xs text-indigo/60">土+火</div>
+                                </div>
+                                <div class="p-2 text-center border border-indigo/20 rounded">
+                                    <div class="font-brush text-lg">日柱</div>
+                                    <div>甲子</div>
+                                    <div class="text-xs text-indigo/60">木+水</div>
+                                </div>
+                                <div class="p-2 text-center border border-indigo/20 rounded">
+                                    <div class="font-brush text-lg">时柱</div>
+                                    <div>乙亥</div>
+                                    <div class="text-xs text-indigo/60">水+木</div>
+                                </div>
+                            </div>
+                            <div id="babyWuxingInfo" class="flex justify-around text-center text-sm">
+                                <div>
+                                    <div class="font-brush">金</div>
+                                    <div class="text-cinnabar">0%</div>
+                                </div>
+                                <div>
+                                    <div class="font-brush">木</div>
+                                    <div class="text-cinnabar">40%</div>
+                                </div>
+                                <div>
+                                    <div class="font-brush">水</div>
+                                    <div class="text-cinnabar">35%</div>
+                                </div>
+                                <div>
+                                    <div class="font-brush">火</div>
+                                    <div class="text-cinnabar">15%</div>
+                                </div>
+                                <div>
+                                    <div class="font-brush">土</div>
+                                    <div class="text-cinnabar">10%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 喜用神结论（完全可见） -->
+                        <div class="mb-6 p-4 bg-cinnabar/5 rounded-lg">
+                            <h4 class="font-brush text-xl text-ink mb-2">二、喜用神定位</h4>
+                            <p id="babyYongShenInfo" class="text-indigo/80 mobile-text-sm">
+                                本命属兔，癸卯年生，五行以木、水为旺势，金元素缺失，喜用神为金，宜用五行属金的字起名，可补命局之不足，助益学业与健康。
+                            </p>
+                        </div>
+                        
+                        <!-- 推荐名字（模糊掩盖+解锁按钮） -->
+                        <div>
+                            <h4 class="font-brush text-xl text-ink mb-4">三、专属宝宝起名推荐</h4>
+                            <div id="babyNameRecommendations" class="space-y-4 relative">
+                                <div class="name-blur" id="babyNameList">
+                                    <div class="p-4 border border-indigo/20 rounded-lg">
+                                        <div class="font-brush text-xl text-cinnabar">【张思远】</div>
+                                        <div class="text-sm text-indigo/80 mt-2 mobile-text-sm">
+                                            出处：《诗经·邶风·雄雉》"瞻彼日月，悠悠我思；道之云远，曷云能来"
+                                        </div>
+                                        <div class="text-sm mt-2 mobile-text-sm">
+                                            五行：金+金+土 | 适配喜用神：金
+                                        </div>
+                                    </div>
+                                    <div class="p-4 border border-indigo/20 rounded-lg">
+                                        <div class="font-brush text-xl text-cinnabar">【张锦程】</div>
+                                        <div class="text-sm text-indigo/80 mt-2 mobile-text-sm">
+                                            出处：《西厢记》"此去前程似锦，再相逢依旧如故"
+                                        </div>
+                                        <div class="text-sm mt-2 mobile-text-sm">
+                                            五行：金+金+火 | 适配喜用神：金
+                                        </div>
+                                    </div>
+                                    <div class="p-4 border border-indigo/20 rounded-lg">
+                                        <div class="font-brush text-xl text-cinnabar">【张瑞霖】</div>
+                                        <div class="text-sm text-indigo/80 mt-2 mobile-text-sm">
+                                            出处：《尚书·说命上》"若岁大旱，用汝作霖雨"
+                                        </div>
+                                        <div class="text-sm mt-2 mobile-text-sm">
+                                            五行：金+金+水 | 适配喜用神：金
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="unlock-overlay">
+                                    <p class="font-brush text-lg text-cinnabar mb-4 mobile-text-sm">完整名字已生成</p>
+                                    <button class="btn-primary unlock-btn" data-type="baby">
+                                        <i class="fa fa-unlock-alt mr-2"></i>解锁完整结果
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- 成人改名板块 -->
+    <section id="adult" class="py-20 px-4 mobile-fit">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12 items-start">
+                <!-- 左侧插画 -->
+                <div class="ink-fade-in sticky top-24">
+                    <img src="https://aka.doubaocdn.com/s/S8Y71wJpx7" alt="水墨山水篆刻" class="w-full max-w-md mx-auto rounded-lg shadow-xl">
+                </div>
+                
+                <!-- 右侧内容区 -->
+                <div class="ink-fade-in">
+                    <h2 class="font-brush text-4xl text-ink mb-4">「成人易名 · 调气场 改运势 启新章」</h2>
+                    <p class="text-indigo/80 mb-8 leading-relaxed mobile-text-sm">
+                        名字为随身气场符号，影响事业、人际、机缘与心境。<br>
+                        若命理五行失衡、原名字相克命格、运势阻滞，<br>
+                        可通过改名调和四柱五行、补足喜用神、疏通命理格局。<br>
+                        依托天干地支推演，定制适配自身命格的专属佳名，<br>
+                        改运增福、提升气场、扭转人生运势。
+                    </p>
+                    
+                    <!-- 表单区域 -->
+                    <form id="adultForm" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-indigo mb-1">本人姓氏 <span class="text-cinnabar">*</span></label>
+                                <input name="surname" type="text" class="form-input w-full px-4 py-3 bamboo-border rounded-sm bg-paper/50" placeholder="请输入您的姓氏" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-indigo mb-1">性别 <span class="text-cinnabar">*</span></label>
+                                <select name="gender" class="form-input w-full px-4 py-3 bamboo-border rounded-sm bg-paper/50">
+                                    <option>男</option>
+                                    <option>女</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-indigo mb-1">真实出生年月日 <span class="text-cinnabar">*</span></label>
+                                <input name="birthday" type="date" class="form-input w-full px-4 py-3 bamboo-border rounded-sm bg-paper/50" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-indigo mb-1">精准出生时辰 <span class="text-cinnabar">*</span></label>
+                                <input name="time" type="time" class="form-input w-full px-4 py-3 bamboo-border rounded-sm bg-paper/50" step="60" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm text-indigo mb-1">现用全名 <span class="text-cinnabar">*</span></label>
+                            <input name="oldName" type="text" class="form-input w-full px-4 py-3 bamboo-border rounded-sm bg-paper/50" placeholder="请输入您现在使用的全名" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm text-indigo mb-1">改名诉求</label>
+                            <input name="demand" type="text" class="form-input w-full px-4 py-3 bamboo-border rounded-sm bg-paper/50" placeholder="如：事业提升/感情和顺/化解短板/简约雅致">
+                        </div>
+                        
+                        <button type="submit" class="ink-click w-full py-4 bg-cinnabar text-white font-brush text-xl rounded-sm hover:bg-cinnabar/90 transition-all shadow-lg mobile-text-sm">
+                            <i class="fa fa-refresh mr-2"></i>开始命理改名解析
+                        </button>
+                    </form>
+                    
+                    <!-- 结果展示区域（名字模糊掩盖） -->
+                    <div id="adultResult" class="hidden mt-10 scroll-bg rounded-lg p-6 result-container">
+                        <h3 class="font-brush text-2xl text-cinnabar mb-4 text-center">「您的专属改名测算结果」</h3>
+                        
+                        <!-- 命理分析（完全可见） -->
+                        <div class="mb-6">
+                            <h4 class="font-brush text-xl text-ink mb-3">一、四柱命理分析</h4>
+                            <div id="baziInfo" class="grid grid-cols-4 gap-2 mb-4 mobile-grid-cols-2">
+                                <div class="p-2 text-center border border-indigo/20 rounded">
+                                    <div class="font-brush text-lg">年柱</div>
+                                    <div>庚午</div>
+                                    <div class="text-xs text-indigo/60">金+火</div>
+                                </div>
+                                <div class="p-2 text-center border border-indigo/20 rounded">
+                                    <div class="font-brush text-lg">月柱</div>
+                                    <div>甲申</div>
+                                    <div class="text-xs text-indigo/60">木+金</div>
+                                </div>
+                                <div class="p-2 text-center border border-indigo/20 rounded">
+                                    <div class="font-brush text-lg">日柱</div>
+                                    <div>戊辰</div>
+                                    <div class="text-xs text-indigo/60">土+土</div>
+                                </div>
+                                <div class="p-2 text-center border border-indigo/20 rounded">
+                                    <div class="font-brush text-lg">时柱</div>
+                                    <div>壬子</div>
+                                    <div class="text-xs text-indigo/60">水+水</div>
+                                </div>
+                            </div>
+                            <div id="wuxingInfo" class="flex justify-around text-center text-sm">
+                                <div>
+                                    <div class="font-brush">金</div>
+                                    <div class="text-cinnabar">25%</div>
+                                </div>
+                                <div>
+                                    <div class="font-brush">木</div>
+                                    <div class="text-cinnabar">15%</div>
+                                </div>
+                                <div>
+                                    <div class="font-brush">水</div>
+                                    <div class="text-cinnabar">30%</div>
+                                </div>
+                                <div>
+                                    <div class="font-brush">火</div>
+                                    <div class="text-cinnabar">10%</div>
+                                </div>
+                                <div>
+                                    <div class="font-brush">土</div>
+                                    <div class="text-cinnabar">20%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 喜用神结论（完全可见） -->
+                        <div class="mb-6 p-4 bg-cinnabar/5 rounded-lg">
+                            <h4 class="font-brush text-xl text-ink mb-2">二、喜用神定位</h4>
+                            <p id="yongShenInfo" class="text-indigo/80 mobile-text-sm">
+                                本命属马，庚午年生，五行以金、水为旺势，火元素偏弱，喜用神为火，宜用五行属火的字改名，可调和气场，助益事业与人际关系。
+                            </p>
+                        </div>
+                        
+                        <!-- 推荐名字（模糊掩盖+解锁按钮） -->
+                        <div>
+                            <h4 class="font-brush text-xl text-ink mb-4">三、专属改名推荐</h4>
+                            <div id="nameRecommendations" class="space-y-4 relative">
+                                <div class="name-blur" id="adultNameList">
+                                    <div class="p-4 border border-indigo/20 rounded-lg">
+                                        <div class="font-brush text-xl text-cinnabar">【李沐阳】</div>
+                                        <div class="text-sm text-indigo/80 mt-2 mobile-text-sm">
+                                            出处：《楚辞·九歌·云中君》"浴兰汤兮沐芳，华采衣兮若英"
+                                        </div>
+                                        <div class="text-sm mt-2 mobile-text-sm">
+                                            五行：木+水+火 | 适配喜用神：火
+                                        </div>
+                                    </div>
+                                    <div class="p-4 border border-indigo/20 rounded-lg">
+                                        <div class="font-brush text-xl text-cinnabar">【李昭然】</div>
+                                        <div class="text-sm text-indigo/80 mt-2 mobile-text-sm">
+                                            出处：《庄子·大宗师》"昭然若揭日月而行也"
+                                        </div>
+                                        <div class="text-sm mt-2 mobile-text-sm">
+                                            五行：木+火+金 | 适配喜用神：火
+                                        </div>
+                                    </div>
+                                    <div class="p-4 border border-indigo/20 rounded-lg">
+                                        <div class="font-brush text-xl text-cinnabar">【李星瑶】</div>
+                                        <div class="text-sm text-indigo/80 mt-2 mobile-text-sm">
+                                            出处：《诗经·大雅·云汉》"倬彼云汉，昭回于天"
+                                        </div>
+                                        <div class="text-sm mt-2 mobile-text-sm">
+                                            五行：木+火+火 | 适配喜用神：火
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="unlock-overlay">
+                                    <p class="font-brush text-lg text-cinnabar mb-4 mobile-text-sm">完整名字已生成</p>
+                                    <button class="btn-primary unlock-btn" data-type="adult">
+                                        <i class="fa fa-unlock-alt mr-2"></i>解锁完整结果
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- 优势板块 -->
+    <section class="py-20 px-4 bg-indigo/5 mobile-fit">
+        <div class="max-w-6xl mx-auto">
+            <!-- 此处保留原有优势板块内容 -->
+        </div>
+    </section>
+
+    <!-- 新增：解锁结果弹窗 -->
+    <div class="modal-overlay" id="unlockModalOverlay"></div>
+    <div class="unlock-modal" id="unlockModal">
+        <h3 class="font-brush text-2xl text-cinnabar mb-4 text-center">解锁完整起名结果</h3>
+        <div class="mb-4 text-center text-indigo">
+            <p class="mb-2">扫码添加微信/关注公众号获取完整结果</p>
+            <div class="flex justify-center items-center gap-4 mb-3">
+                <div class="p-2 border border-gold rounded">
+                    <p class="font-brush text-sm mb-1">公众号</p>
+                    <p class="text-xs font-mono">gh_b96fbeb5c998</p>
+                    <button class="copy-btn" data-copy="gh_b96fbeb5c998">
+                        <i class="fa fa-copy mr-1"></i>复制
+                    </button>
+                    <div class="copy-success">复制成功！</div>
+                </div>
+                <div class="p-2 border border-gold rounded">
+                    <p class="font-brush text-sm mb-1">微信</p>
+                    <p class="text-xs font-mono">GuoXueQiMing38</p>
+                    <button class="copy-btn" data-copy="GuoXueQiMing38">
+                        <i class="fa fa-copy mr-1"></i>复制
+                    </button>
+                    <div class="copy-success">复制成功！</div>
+                </div>
+            </div>
+            <p class="text-sm text-indigo/80">添加后发送【解锁+姓名】即可获取完整起名方案</p>
+        </div>
+        <div class="text-center">
+            <button class="btn-secondary" id="closeModalBtn">
+                <i class="fa fa-times mr-2"></i>关闭
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 导航栏滚动效果
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('nav-scrolled');
+                } else {
+                    navbar.classList.remove('nav-scrolled');
+                }
+            });
+
+            // 移动端菜单切换
+            const menuBtn = document.getElementById('menuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            menuBtn.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+                mobileMenu.classList.toggle('mobile-menu-open');
+            });
+
+            // 水墨特效
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('ink-click')) {
+                    const ripple = document.createElement('div');
+                    ripple.classList.add('ink-ripple');
+                    ripple.style.left = e.clientX + 'px';
+                    ripple.style.top = e.clientY + 'px';
+                    document.body.appendChild(ripple);
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 800);
+                }
+                
+                const dot = document.createElement('div');
+                dot.classList.add('ink-dot');
+                dot.style.left = e.clientX + 'px';
+                dot.style.top = e.clientY + 'px';
+                const size = Math.random() * 20 + 10;
+                dot.style.width = size + 'px';
+                dot.style.height = size + 'px';
+                document.body.appendChild(dot);
+                setTimeout(() => {
+                    dot.remove();
+                }, 2000);
+            });
+
+            // 滚动渐入效果
+            const fadeElements = document.querySelectorAll('.ink-fade-in');
+            const scrollElements = document.querySelectorAll('.scroll-text');
+            
+            const fadeInOnScroll = function() {
+                fadeElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementBottom = element.getBoundingClientRect().bottom;
+                    const isVisible = (elementTop < window.innerHeight - 100) && (elementBottom > 0);
+                    if (isVisible) {
+                        element.classList.add('show');
+                    }
+                });
+                
+                scrollElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const isVisible = (elementTop < window.innerHeight - 100);
+                    if (isVisible) {
+                        element.classList.add('show');
+                    }
+                });
+            };
+            
+            window.addEventListener('scroll', fadeInOnScroll);
+            fadeInOnScroll(); // 初始加载时执行
+
+            // 表单提交逻辑
+            const babyForm = document.getElementById('babyForm');
+            const adultForm = document.getElementById('adultForm');
+            const babyResult = document.getElementById('babyResult');
+            const adultResult = document.getElementById('adultResult');
+
+            babyForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                babyResult.classList.remove('hidden');
+                // 平滑滚动到结果区域
+                babyResult.scrollIntoView({ behavior: 'smooth' });
+            });
+
+            adultForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                adultResult.classList.remove('hidden');
+                // 平滑滚动到结果区域
+                adultResult.scrollIntoView({ behavior: 'smooth' });
+            });
+
+            // 解锁按钮点击事件
+            const unlockBtns = document.querySelectorAll('.unlock-btn');
+            const unlockModal = document.getElementById('unlockModal');
+            const unlockModalOverlay = document.getElementById('unlockModalOverlay');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+
+            unlockBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = this.getAttribute('data-type');
+                    // 记录解锁类型，用于后续逻辑
+                    unlockModal.setAttribute('data-type', type);
+                    // 显示弹窗
+                    unlockModalOverlay.classList.add('show');
+                    unlockModal.classList.add('show');
+                    // 禁止背景滚动
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            // 关闭弹窗
+            function closeModal() {
+                unlockModalOverlay.classList.remove('show');
+                unlockModal.classList.remove('show');
+                // 恢复背景滚动
+                document.body.style.overflow = '';
+            }
+
+            closeModalBtn.addEventListener('click', closeModal);
+            unlockModalOverlay.addEventListener('click', closeModal);
+
+            // 一键复制功能
+            const copyBtns = document.querySelectorAll('.copy-btn');
+            copyBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const textToCopy = this.getAttribute('data-copy');
+                    // 创建临时输入框
+                    const tempInput = document.createElement('input');
+                    tempInput.value = textToCopy;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    
+                    // 显示复制成功提示
+                    const successMsg = this.nextElementSibling;
+                    successMsg.style.display = 'block';
+                    setTimeout(() => {
+                        successMsg.style.display = 'none';
+                    }, 2000);
+                });
+            });
+
+            // 优化移动端触摸体验
+            document.querySelectorAll('.ink-click').forEach(el => {
+                el.style.touchAction = 'manipulation';
+            });
+        });
+    </script>
+</body>
+</html>
